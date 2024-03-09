@@ -243,7 +243,7 @@ onMounted(async () => {
 
 <style scoped>
 .chart {
-  height: 100vh;
+  height: 400px;
 }
 
 .container {
