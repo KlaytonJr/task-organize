@@ -2,14 +2,6 @@
 import { ref, reactive, watch, computed } from 'vue';
 import { fetchData, updateData, sendData, deleteData } from '@/services/api.js';
 
-// {
-//     "creation": "2023-10-27T22:56:03.103Z",
-//     "_id": "653c5761905aff32b4373154",
-//     "name": "Novo",
-//     "email": "novo@mail.com",
-//     "__v": 0
-// }
-
 export default {
   props: ['values'],
 

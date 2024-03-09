@@ -28,12 +28,7 @@ export default {
         { title: 'Descrição', key: 'description' },
         { title: 'Responsável', key: 'responsible' },
         { title: 'Ações', key: 'actions', sortable: false },
-      ]);
-    const defaultItem = {
-        status: '',
-        description: '',
-        responsible: '',
-    };
+    ]);
 
     const formTitle = ref('');
 

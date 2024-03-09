@@ -36,8 +36,6 @@ export default {
             links: [
                 { icon: 'mdi-view-dashboard', text: 'Dashboard', route: '/'},
                 { icon: 'mdi-account-group', text: 'Usuários', route: '/users'},
-                // { icon: 'mdi-view-list', text: 'Tasks', route: '/tasks'},
-                // { icon: 'mdi-view-list', text: 'Tasks' },
             ],
             secondaryLinks: [
                 { icon: '', text: 'Minhas', route: '/tasks?filter=0'},
