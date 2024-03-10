@@ -2,7 +2,7 @@
 import VTableTask from '@/components/Table/VTableTask.vue';
 import { useRoute } from 'vue-router'
 import { onMounted, watch, reactive } from 'vue'
-import { fetchData } from '@/services/api.js'
+import { fetchData } from '@/services/api.ts'
 
 const state = reactive({
     items: []

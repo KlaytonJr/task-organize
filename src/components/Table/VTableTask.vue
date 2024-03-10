@@ -1,6 +1,6 @@
 <script>
 import { ref, reactive, watch, computed } from 'vue';
-import { fetchData, updateData, sendData, deleteData } from '@/services/api.js';
+import { fetchData, updateData, sendData, deleteData } from '@/services/api.ts';
 
 export default {
   props: ['values'],
