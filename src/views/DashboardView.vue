@@ -1,6 +1,9 @@
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { fetchData, idUserLogged } from '@/services/api';
+import Card from '@/components/dash/Card.vue'
+import { StatusEnum } from '@/dto/TaskDTO'
 
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
@@ -22,6 +25,8 @@ use([
   LegendComponent,
   GridComponent 
 ]);
+
+const router = useRouter();
 
 const optionMyTask = ref({
   title: {
@@ -110,8 +115,8 @@ const totalFinished = ref(0);
 const totalAll = ref(0);
 
 function getDataOptionMyTask(tasks) {
-  const opened = tasks.filter((task) => task.status === 'OPEN' && task.responsible._id === idUserLogged).length;
-  const finished = tasks.filter((task) => task.status === 'FINISHED' && task.responsible._id === idUserLogged).length;
+  const opened = tasks.filter((task) => task.status === StatusEnum.OPEN && task.responsible._id === idUserLogged).length;
+  const finished = tasks.filter((task) => task.status === StatusEnum.FINISHED && task.responsible._id === idUserLogged).length;
 
   return [
     { value: opened, name: 'Em Aberto', itemStyle: { color: '#f1c40f' } },
@@ -121,8 +126,8 @@ function getDataOptionMyTask(tasks) {
 
 function setTotalDash(tasks) {
   totalMyTask.value = tasks.filter((task) => task.responsible._id === idUserLogged).length;
-  totalOpened.value = tasks.filter((task) => task.status === 'OPEN').length;
-  totalFinished.value = tasks.filter((task) => task.status === 'FINISHED').length;
+  totalOpened.value = tasks.filter((task) => task.status === StatusEnum.OPEN).length;
+  totalFinished.value = tasks.filter((task) => task.status === StatusEnum.FINISHED).length;
   totalAll.value = tasks.length;
 }
 
@@ -137,8 +142,8 @@ function getSeriesOptionTaskResponsible(tasks) {
 
     const ids = [...new Set(tasks.map((task) => task.responsible._id))];
     ids.forEach((id) => {
-      dataOpened.push(tasks.filter((task) => (task.status === 'OPEN' && task.responsible._id === id)).length);
-      dataFinished.push(tasks.filter((task) => (task.status === 'FINISHED' && task.responsible._id === id)).length);
+      dataOpened.push(tasks.filter((task) => (task.status === StatusEnum.OPEN && task.responsible._id === id)).length);
+      dataFinished.push(tasks.filter((task) => (task.status === StatusEnum.FINISHED && task.responsible._id === id)).length);
     });
 
     return [
@@ -177,61 +182,37 @@ onMounted(async () => {
     <h1>Dashboard</h1>
 
     <div class="row">
-        <v-card>
-            <template v-slot:prepend>
-                <div class="card">
-                    <div class="icon-container blue">
-                        <v-icon color="white" icon="mdi-lightbulb-on-outline" size="45px"></v-icon>
-                    </div>
-                    <div class="details">
-                        <v-card-text class="title">Minhas</v-card-text>
-                        <v-card-text>{{ totalMyTask }}</v-card-text>
-                    </div>
-                </div>
-            </template>
-        </v-card>
-        
-        <v-card>
-            <template v-slot:prepend>
-                <div class="card">
-                    <div class="icon-container yellow">
-                        <v-icon color="white" icon="mdi-alert-outline" size="45px"></v-icon>
-                    </div>
-                    <div class="details">
-                        <v-card-text class="title">Em aberto</v-card-text>
-                        <v-card-text>{{ totalOpened }}</v-card-text>
-                    </div>
-                </div>
-            </template>
-        </v-card>
-
-        <v-card>
-            <template v-slot:prepend>
-                <div class="card">
-                    <div class="icon-container green">
-                        <v-icon color="white" icon="mdi-check" size="45px"></v-icon>
-                    </div>
-                    <div class="details">
-                        <v-card-text class="title">Finalizadas</v-card-text>
-                        <v-card-text>{{ totalFinished }}</v-card-text>
-                    </div>
-                </div>
-            </template>
-        </v-card>
-
-        <v-card >
-            <template v-slot:prepend>
-                <div class="card">
-                    <div class="icon-container gray">
-                        <v-icon color="white" icon="mdi-view-grid-outline" size="45px"></v-icon>
-                    </div>
-                    <div class="details">
-                        <v-card-text class="title">Todas</v-card-text>
-                        <v-card-text>{{ totalAll }}</v-card-text>
-                    </div>
-                </div>
-            </template>
-        </v-card>
+        <Card
+            title="Minhas"
+            :value="totalMyTask"
+            icon="mdi-lightbulb-on-outline"
+            className="blue"
+            @action="() => router.push('/tasks?filter=0')"
+        />
+       
+        <Card
+            title="Em aberto"
+            :value="totalOpened"
+            icon="mdi-alert-outline"
+            className="yellow"
+            @action="() => router.push('/tasks?filter=1')"
+        />
+       
+        <Card
+            title="Finalizadas"
+            :value="totalFinished"
+            icon="mdi-check"
+            className="green"
+            @action="() => router.push('/tasks?filter=2')"
+        />
+       
+        <Card
+            title="Todas"
+            :value="totalAll"
+            icon="mdi-view-grid-outline"
+            className="gray"
+            @action="() => router.push('/tasks?filter=3')"
+        />
     </div>
 
     <div class="row">
@@ -256,52 +237,5 @@ onMounted(async () => {
     margin-top: 30px;
     gap: 30px;
 }
-
-.v-card {
-    width: 100%;
-}
-
-.card {
-    display: flex;
-    align-items: center;
-}
-
-.icon-container {
-    padding: 10px;
-    border-radius: 5px;
-    margin-right: 15px;
-}
-
-.icon-container.blue {
-    background-color: #3498db;
-}
-.icon-container.yellow {
-    background-color: #f1c40f;
-}
-.icon-container.green {
-    background-color: #2ecc71;
-}
-.icon-container.gray {
-    background-color: #bdc3c7;
-}
-
-.details {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-direction: column;
-}
-
-.details > .v-card-text.title {
-    font-size: 20px;
-    font-weight: 400;
-    margin-bottom: 5px;
-}
-
-.details > .v-card-text {
-    padding: 0;
-    margin: 0;
-    font-size: 22px;
-    font-weight: normal;
-}
 </style>
+
