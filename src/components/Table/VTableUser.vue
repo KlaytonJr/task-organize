@@ -1,32 +1,29 @@
-<script>
+<script lang="ts">
 import { ref, reactive, watch, computed } from 'vue';
-import { fetchData, updateData, sendData, deleteData } from '@/services/api.ts';
+import { fetchData, updateData, sendData, deleteData } from '@/services/api';
+import { UserDTO } from '@/dto/UserDTO';
 
 export default {
   props: ['values'],
 
   setup(props) {
-    const dialog = ref(false);
-    const dialogDelete = ref(false);
-    const state = reactive({
+    const dialog = ref<boolean>(false);
+    const dialogDelete = ref<boolean>(false);
+    const state = reactive<any>({
         value: [],
-        responsibles: [],
     });
-    const editedIndex = ref(-1);
-    const editedItem = reactive({
+    const editedIndex = ref<number>(-1);
+    const editedItem = reactive<UserDTO>({
         name: '',
         email: '',
         password: '',
     });
-    const headers = reactive([
+    const headers = reactive<any>([
         { title: 'Nome', key: 'name' },
         { title: 'Email', key: 'email' },
         { title: 'Ações', key: 'actions', sortable: false },
     ]);
-
-    const formTitle = ref('');
-
-    const responsibles = computed(() => state.responsibles.map((item) => item.name));
+    const formTitle = ref<string>('');
 
     const initialize = () => {
         state.value = props.values;
@@ -65,7 +62,7 @@ export default {
     };
 
     const save = async () => {
-        const payload = {
+        const payload: UserDTO = {
             name: editedItem.name,
             email: editedItem.email,
             password: editedItem.password,
@@ -76,22 +73,15 @@ export default {
             Object.assign(state.value[editedIndex.value], editedItem);
         } else {
             sendData(`/user`, payload)
-                .then((resp) => {
+                .then(({ body }) => {
                     state.value.push({
-                        name: resp.body.name,
-                        email: resp.body.email,
+                        name: body.name,
+                        email: body.email,
                     });
                 })
         }
         close();
     };
-
-    const getResponsibles = () => {
-        fetchData(`/user`, true)
-            .then((resp) => {
-                state.responsibles = resp.body;
-            });
-    }
 
     watch(dialog, (val) => {
       val || close();
@@ -102,7 +92,7 @@ export default {
     });
 
     watch(editedIndex, () => {
-      formTitle.value = editedIndex.value === -1 ? 'New Item' : 'Edit Item';
+      formTitle.value = editedIndex.value === -1 ? 'Novo Item' : 'Editar Item';
     });
 
     watch(props, () => {
@@ -110,7 +100,6 @@ export default {
     });
 
     initialize();
-    getResponsibles();
 
     return {
       dialog,
@@ -120,7 +109,6 @@ export default {
       editedIndex,
       editedItem,
       formTitle,
-      responsibles,
       editItem,
       deleteItem,
       deleteItemConfirm,
@@ -141,7 +129,7 @@ export default {
         <v-toolbar
           flat
         >
-          <v-toolbar-title>Users</v-toolbar-title>
+          <v-toolbar-title>Usuários</v-toolbar-title>
           <v-divider
             class="mx-4"
             inset
@@ -159,7 +147,7 @@ export default {
                 class="mb-2"
                 v-bind="props"
               >
-                New Item
+                Novo Item
               </v-btn>
             </template>
             <v-card>

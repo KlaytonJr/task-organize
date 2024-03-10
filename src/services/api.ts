@@ -3,7 +3,10 @@ import axios, { AxiosResponse } from 'axios';
 export const idUserLogged: string = '64ebb17c5926cf56383670bd';
 
 interface ApiResponse {
-    // Define the structure of your API response data here
+    body: any
+    error: boolean
+    message:  string
+    status: number
 }
 
 const api = axios.create({

@@ -1,24 +1,25 @@
-<script>
+<script lang="ts">
 import { ref, reactive, watch, computed } from 'vue';
-import { fetchData, updateData, sendData, deleteData } from '@/services/api.ts';
+import { fetchData, updateData, sendData, deleteData } from '@/services/api';
+import { TaskDTO, StatusEnum } from '@/dto/TaskDTO'
 
 export default {
   props: ['values'],
 
   setup(props) {
-    const dialog = ref(false);
-    const dialogDelete = ref(false);
-    const state = reactive({
+    const state = reactive<any>({
         value: [],
         responsibles: [],
     });
-    const editedIndex = ref(-1);
-    const editedItem = reactive({
+    const dialog = ref<boolean>(false);
+    const dialogDelete = ref<boolean>(false);
+    const editedIndex = ref<number>(-1);
+    const editedItem = reactive<TaskDTO>({
         status: '',
         description: '',
-        responsible: '',
+        responsible: undefined,
     });
-    const headers = reactive([
+    const headers = reactive<any>([
         {
           title: 'Status',
           align: 'start',
@@ -30,7 +31,7 @@ export default {
         { title: 'Ações', key: 'actions', sortable: false },
     ]);
 
-    const formTitle = ref('');
+    const formTitle = ref<string>('');
 
     const responsibles = computed(() => state.responsibles.map((item) => item.name));
 
@@ -68,7 +69,7 @@ export default {
       dialog.value = false;
       editedItem.status = "";
       editedItem.description = "";
-      editedItem.responsible = "";
+      editedItem.responsible = undefined;
       editedIndex.value = -1;
     };
     const closeDelete = () => {
@@ -77,9 +78,9 @@ export default {
     };
 
     const save = async () => {
-        const payload = {
+        const payload: TaskDTO = {
             description: editedItem.description,
-            status: editedItem.status === 'Em aberto' ? 'open' : 'finished',
+            status: editedItem.status === 'Em aberto' ? StatusEnum.OPEN : StatusEnum.FINISHED,
             responsible: {
                 _id: responsibleByName(editedItem.responsible)._id
             }
@@ -90,11 +91,11 @@ export default {
             Object.assign(state.value[editedIndex.value], editedItem);
         } else {
             sendData(`/task`, payload)
-                .then((resp) => {
+                .then(({ body }) => {
                     state.value.push({
-                        description: resp.body.description,
-                        status: resp.body.status,
-                        responsible: resp.body.responsible.name,
+                        description: body.description,
+                        status: body.status,
+                        responsible: body.responsible.name,
                     });
                 })
         }
@@ -103,8 +104,8 @@ export default {
 
     const getResponsibles = () => {
         fetchData(`/user`, true)
-            .then((resp) => {
-                state.responsibles = resp.body;
+            .then(({ body }) => {
+                state.responsibles = body;
             });
     }
 
@@ -117,7 +118,7 @@ export default {
     });
 
     watch(editedIndex, () => {
-      formTitle.value = editedIndex.value === -1 ? 'New Item' : 'Edit Item';
+      formTitle.value = editedIndex.value === -1 ? 'Novo Item' : 'Editar Item';
     });
 
     watch(props, () => {
@@ -174,7 +175,7 @@ export default {
                 class="mb-2"
                 v-bind="props"
               >
-                New Item
+                Novo Item
               </v-btn>
             </template>
             <v-card>

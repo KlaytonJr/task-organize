@@ -12,9 +12,9 @@ const route = useRoute();
 
 const updateItems = () => {
     fetchData(`/user`, true)
-        .then((resp) => {
+        .then(({ body }) => {
             const updatedItems = [];
-            resp.body.forEach((item) => {
+            body.forEach((item) => {
                 updatedItems.push({
                     id: item._id,
                     name: item.name,
