@@ -1,9 +1,9 @@
-<script setup>
+<script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { fetchData, idUserLogged } from '@/services/api';
 import Card from '@/components/dash/Card.vue'
-import { StatusEnum } from '@/dto/TaskDTO'
+import { TaskDTO, StatusEnum } from '@/dto/TaskDTO'
 
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
@@ -114,9 +114,9 @@ const totalOpened = ref(0);
 const totalFinished = ref(0);
 const totalAll = ref(0);
 
-function getDataOptionMyTask(tasks) {
-  const opened = tasks.filter((task) => task.status === StatusEnum.OPEN && task.responsible._id === idUserLogged).length;
-  const finished = tasks.filter((task) => task.status === StatusEnum.FINISHED && task.responsible._id === idUserLogged).length;
+function getDataOptionMyTask(tasks: TaskDTO[]) {
+  const opened = tasks.filter((task: TaskDTO) => task.status === StatusEnum.OPEN && task.responsible._id === idUserLogged).length;
+  const finished = tasks.filter((task: TaskDTO) => task.status === StatusEnum.FINISHED && task.responsible._id === idUserLogged).length;
 
   return [
     { value: opened, name: 'Em Aberto', itemStyle: { color: '#f1c40f' } },
@@ -124,26 +124,26 @@ function getDataOptionMyTask(tasks) {
   ];
 }
 
-function setTotalDash(tasks) {
-  totalMyTask.value = tasks.filter((task) => task.responsible._id === idUserLogged).length;
-  totalOpened.value = tasks.filter((task) => task.status === StatusEnum.OPEN).length;
-  totalFinished.value = tasks.filter((task) => task.status === StatusEnum.FINISHED).length;
+function setTotalDash(tasks: TaskDTO[]) {
+  totalMyTask.value = tasks.filter((task: TaskDTO) => task.responsible._id === idUserLogged).length;
+  totalOpened.value = tasks.filter((task: TaskDTO) => task.status === StatusEnum.OPEN).length;
+  totalFinished.value = tasks.filter((task: TaskDTO) => task.status === StatusEnum.FINISHED).length;
   totalAll.value = tasks.length;
 }
 
-function getyAxisOptionTaskResponsible(tasks) {
-    const names = [...new Set(tasks.map((task) => task.responsible.name))];
+function getyAxisOptionTaskResponsible(tasks: TaskDTO[]) {
+    const names = [...new Set(tasks.map((task: TaskDTO) => task.responsible.name))];
     return { type: 'category', data: names };
 }
 
-function getSeriesOptionTaskResponsible(tasks) {
+function getSeriesOptionTaskResponsible(tasks: TaskDTO[]) {
     const dataOpened = [];
     const dataFinished = [];
 
-    const ids = [...new Set(tasks.map((task) => task.responsible._id))];
+    const ids = [...new Set(tasks.map((task: TaskDTO) => task.responsible._id))];
     ids.forEach((id) => {
-      dataOpened.push(tasks.filter((task) => (task.status === StatusEnum.OPEN && task.responsible._id === id)).length);
-      dataFinished.push(tasks.filter((task) => (task.status === StatusEnum.FINISHED && task.responsible._id === id)).length);
+      dataOpened.push(tasks.filter((task: TaskDTO) => (task.status === StatusEnum.OPEN && task.responsible._id === id)).length);
+      dataFinished.push(tasks.filter((task: TaskDTO) => (task.status === StatusEnum.FINISHED && task.responsible._id === id)).length);
     });
 
     return [
